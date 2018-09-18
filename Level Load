@@ -1,0 +1,60 @@
+//18/9/18 - Program that loads in level block files
+
+// The folowing data is for the first level blocks
+DATA brick,brick,brick,air--,air--,air--,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick
+DATA brick,air--,save-,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,brick
+DATA brick,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,brick
+DATA brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,air--,air--,air--brick,brick,brick
+DATA brick,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,brick
+DATA brick,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,brick
+DATA brick,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,brick
+DATA brick,brick,brick,air--,air--,air--,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick
+DATA brick,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,brick
+DATA brick,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,brick
+DATA brick,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,brick
+DATA brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,air--,air--,air--brick,brick,brick
+DATA brick,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,brick
+DATA brick,air--,save-,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,brick
+DATA brick,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,brick
+DATA brick,brick,brick,air--,air--,air--,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick,brick
+DATA brick,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,brick
+DATA brick,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,brick
+DATA brick,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,air--,brick
+DATA XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX,XXX
+
+DIM index1 AS SHORT
+DIM index2 AS SHORT
+DIM blocks(25,19) AS STR255
+DIM object AS STR255
+DIM fPath AS CFURLREF
+
+WINDOW 1, @"IWBTG Load", (0,0) - (500,500)
+
+//This writes the previous data into a file and saves it.
+/*LET fPath = OSPanelSave(,@"Save File", @"txt", @"Objects Final", @"Save")
+OPEN "O", #1, @fPath
+READ object
+WHILE object <> "XXX"
+WRITE #1, object; 5
+READ object
+WEND
+CLOSE #1*/
+
+LET fPath = OSPanelOpen(,@"Open Desired File", @"txt", @"Open")
+OPEN "I", #1, @fPath
+FOR index2 = 1 TO 19 STEP 1
+FOR index1 = 1 TO 19 STEP 1
+READ #1, object; 5
+FN TRUNCATE (object)
+LET blocks(index1,index2) = object
+NEXT
+NEXT
+CLOSE #1
+
+FOR index2 = 1 TO 19 STEP 1
+FOR index1 = 1 TO 19 STEP 1
+PRINT "("index1","index2") is "blocks(index1,index2)
+NEXT
+NEXT
+
+STOP
