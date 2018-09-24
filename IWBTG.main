@@ -1,305 +1,1 @@
-include "Tlbx MoreFilesX.incl"
-
-
-include resources "1st stage background.gif"
-include resources "2nd stage background.gif"
-include resources "Apple.gif"
-include resources "Cloud quad.gif"
-include resources "Cloud single.gif"
-include resources "Dirt block.gif"
-include resources "Grass block.gif"
-include resources "Many spike DOWN.gif"
-include resources "Many spike LEFT.gif"
-include resources "Many spike RIGHT.gif"
-include resources "Save GREEN.gif"
-include resources "Save RED.gif"
-include resources "Spike DOWN.gif"
-include resources "Spike LEFT.gif"
-include resources "Spike RIGHT.gif"
-include resources "Spike UP.gif"
-include resources "Stone block.gif"
-include resources "Stone floor block.gif"
-include resources "The kid LEFT.gif"
-include resources "The kid RIGHT.gif"
-include resources "Tree.gif"
-include resources "Level 1 Blocks.txt"
-
-
-local fn ResourceImageToPICTHandle( imageName as CFStringRef, imageRect as ^rect ) as handle
-'~'1
-dim as GraphicsImportComponent gi 
-dim as ComponentResult√ä√ä√ä√ä√ä√ä√ä√ä result
-dim as PicHandle√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä pictH : pictH = NULL
-dim as CFURLRef√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä url
-dim as FSRef√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä fsRef
-dim as FSSpec√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä fsSpec
-dim as OSErr√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä err
-dim as Boolean√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä√ä success
-
-url = fn CFBundleCopyResourceURL( fn CFBundleGetMainBundle(), imageName, 0, 0 )
-long if ( url )
-success = fn CFURLGetFSRef( url, @fsRef )
-CFRelease( url )
-long if ( success )
-err = fn FSGetCatalogInfo( @fsRef, _kFSCatInfoNone, NULL, NULL, #fsSpec, NULL )
-long if ( err == _noErr )
-err = fn GetGraphicsImporterForFile( fsSpec, gi )
-long if ( err == _noErr )
-result = fn GraphicsImportGetAsPicture( gi, pictH )
-result = fn GraphicsImportGetBoundsRect( gi, #imageRect )
-err = fn CloseComponent( gi )
-end if
-end if
-end if
-end if
-end fn = (handle)pictH√ä√ä√ä√ä // User must dispose
-
-dim as handle pictH
-dim as rect√ä√ä r
-
-DIM lastDir AS STR255
-DIM hitX1 AS SHORT
-DIM hitY1 AS SHORT
-DIM hitX2 AS SHORT
-DIM hitY2 AS SHORT
-DIM distanceCheck AS SHORT
-DIM randInt AS SHORT
-DIM inkey AS STR255
-DIM heightCounter AS SHORT
-DIM inkeyFill AS STR255
-DIM upDown AS STR255
-DIM game AS STR255
-DIM score AS SHORT
-DIM int3 AS SHORT
-DIM scoreCheck AS STR255
-DIM leftRight AS STR255
-DIM jumpNo AS SHORT
-DIM tempJump AS SHORT
-DIM index1 AS SHORT
-DIM index2 AS SHORT
-DIM blocks(19,25) AS STR255
-DIM object AS STR255
-DIM fPath AS CFURLREF
-
-WINDOW 1, @"IWBTG", (0,0) - (500,500)
-
-LET fpath = OSPANELOPEN(,@"Select a file", @"txt",@"Open",)
-OPEN "I",1, @fPath
-FOR index2 = 1 TO 19 STEP 1
-FOR index1 = 1 TO 25 STEP 1
-READ #1, object; 5
-FN TRUNCATE (object)
-LET blocks(index1,index2) = object
-NEXT
-NEXT
-CLOSE #1
-
-FOR index1 = 1 TO 19 STEP 1
-FOR index2 = 1 TO 25 STEP 1
-IF blocks(index1,index2) = "brick"
-pictH = fn ResourceImageToPICTHandle( @"Dirt block.png", @r )
-picture (index1*25,index2*25) - ((index1*25)+25,(index2*25)+25), pictH
-fn DisposeH( pictH )
-END IF
-NEXT
-NEXT
-
-
-
-
-/*pictH = fn ResourceImageToPICTHandle( @"1st stage background.png", @r )
-picture ( 0,0 ) - ( 500, 500), pictH
-fn DisposeH( pictH )*/
-
-
-
-
-
-
-
-
-
-
-
-LET hitX1 = 60
-LET hitX2 = 84
-
-LET hitY1 = 379
-LET hitY2 = 400
-
-
-pictH = fn ResourceImageToPICTHandle( @"The kid RIGHT.gif", @r )
-picture ( hitX1,hitY1 ) - ( hitX2, hitY2), pictH
-fn DisposeH( pictH )
-
-
-DO
-
-SELECT upDown
-CASE "up"
-IF jumpNo = 1
-COLOR _zWhite
-
-BOX FILL hitX1,hitY1 TO hitX2,hitY2
-hitY1 -= 7
-hitY2 -= 7
-heightCounter += 1
-IF heightCounter = 12
-LET heightCounter = 0
-LET upDown = "down"
-END IF
-
-END IF
-
-
-IF jumpNo > 1
-COLOR _zWhite
-
-BOX FILL hitX1,hitY1 TO hitX2,hitY2
-hitY1 -= 7
-hitY2 -= 7
-heightCounter += 1
-IF heightCounter = 8
-LET heightCounter = 0
-LET upDown = "down"
-
-END IF
-END IF
-
-CASE "down"
-IF jumpNo = 1
-COLOR _zWhite
-
-BOX FILL hitX1,hitY1 TO hitX2,hitY2
-hitY1 += 7
-hitY2 +=7
-
-IF hitY1 = tempJump
-LET upDown = ""
-LET inkeyFill = ""
-LET jumpNo = 0
-END IF
-
-END IF
-IF jumpNo >= 2 AND hitY1 < tempJump
-COLOR _zWhite
-
-BOX FILL hitX1,hitY1 TO hitX2,hitY2
-
-hitY1 += 7
-hitY2 +=7
-IF hitY1 = tempJump
-LET upDown = ""
-LET inkeyFill = ""
-LET jumpNo = 0
-END IF
-
-
-END IF
-
-END SELECT
-
-SELECT leftRight
-CASE "a"
-COLOR _zWhite
-
-BOX FILL hitX1,hitY1 TO hitX2,hitY2
-hitX1 -= 20
-hitX2 -= 20
-LET inkeyFill = ""
-LET leftRight = ""
-
-LET lastDir = "a"
-
-CASE "d"
-COLOR _zWhite
-
-BOX FILL hitX1,hitY1 TO hitX2,hitY2
-hitX1 += 20
-hitX2 += 20
-LET inkeyFill = ""
-LET leftRight = ""
-
-LET lastDir = "d"
-
-END SELECT
-
-SELECT lastDir
-
-CASE "a"
-
-pictH = fn ResourceImageToPICTHandle( @"The kid LEFT.gif", @r )
-picture ( hitX1,hitY1 ) - ( hitX2, hitY2), pictH
-fn DisposeH( pictH )
-
-CASE "d"
-
-pictH = fn ResourceImageToPICTHandle( @"The kid RIGHT.gif", @r )
-picture ( hitX1,hitY1 ) - ( hitX2, hitY2), pictH
-fn DisposeH( pictH )
-
-END SELECT
-
-
-
-/* _zRed
-LONG COLOR 0,0,0,_False
-
-PRINT % (50,50) jumpNo
-PRINT % (50,70) heightCounter
-PRINT % (50,90) upDown*/ // debug
-
-IF heightCounter = 5 AND jumpNo = 2
-PRINT "hI"
-END IF
-
-
-
-LET inkey = ""
-
-int3 ++
-IF int3 = 2
-LET int3 = 0
-LET inkey = INKEY$
-
-IF inkey <> ""
-LET inkeyFill = "yup"
-SELECT inkey
-CASE " "
-LET jumpNo += 1
-IF jumpNo = 0 OR jumpNo = 1 OR jumpNo = 2
-LET heightCounter = 0
-LET upDown = "up"
-IF jumpNo = 1
-LET tempJump = hitY1
-END IF
-END IF
-CASE "a"
-LET leftRight = "a"
-CASE "d"
-LET leftRight = "d"
-END SELECT
-LET inkey = ""
-END IF
-
-END IF
-
-COLOR _zWhite
-BOX FILL 51,51 TO 100, 100
-
-
-/*
-pictH = fn ResourceImageToPICTHandle( @"1st stage background.png", @r )
-picture ( 0,0 ) - ( 500, 500), pictH
-fn DisposeH( pictH )
-*/
-
-
-UNTIL game = "over"
-
-STOP
-
-
-
-
-
+include "Tlbx MoreFilesX.incl"include resources "1st stage background.gif"include resources "2nd stage background.gif"include resources "Apple.gif"include resources "Cloud quad.gif"include resources "Cloud single.gif"include resources "Dirt block.gif"include resources "Grass block.gif"include resources "Many spike DOWN.gif"include resources "Many spike LEFT.gif"include resources "Many spike RIGHT.gif"include resources "Save GREEN.gif"include resources "Save RED.gif"include resources "Spike DOWN.gif"include resources "Spike LEFT.gif"include resources "Spike RIGHT.gif"include resources "Spike UP.gif"include resources "Stone block.gif"include resources "Stone floor block.gif"include resources "The kid LEFT.gif"include resources "The kid RIGHT.gif"include resources "Tree.gif"include resources "Level 1 Blocks.txt"local fn ResourceImageToPICTHandle( imageName as CFStringRef, imageRect as ^rect ) as handle'~'1dim as GraphicsImportComponent gi dim as ComponentResult         resultdim as PicHandle               pictH : pictH = NULLdim as CFURLRef                urldim as FSRef                   fsRefdim as FSSpec                  fsSpecdim as OSErr                   errdim as Boolean                 successurl = fn CFBundleCopyResourceURL( fn CFBundleGetMainBundle(), imageName, 0, 0 )long if ( url )success = fn CFURLGetFSRef( url, @fsRef )CFRelease( url )long if ( success )err = fn FSGetCatalogInfo( @fsRef, _kFSCatInfoNone, NULL, NULL, #fsSpec, NULL )long if ( err == _noErr )err = fn GetGraphicsImporterForFile( fsSpec, gi )long if ( err == _noErr )result = fn GraphicsImportGetAsPicture( gi, pictH )result = fn GraphicsImportGetBoundsRect( gi, #imageRect )err = fn CloseComponent( gi )end ifend ifend ifend ifend fn = (handle)pictH     // User must disposedim as handle pictHdim as rect   rDIM lastDir AS STR255DIM hitX1 AS SHORTDIM hitY1 AS SHORTDIM hitX2 AS SHORTDIM hitY2 AS SHORTDIM distanceCheck AS SHORTDIM randInt AS SHORTDIM inkey AS STR255DIM heightCounter AS SHORTDIM inkeyFill AS STR255DIM upDown AS STR255DIM game AS STR255DIM score AS SHORTDIM int3 AS SHORTDIM scoreCheck AS STR255DIM leftRight AS STR255DIM jumpNo AS SHORTDIM tempJump AS SHORTDIM index1 AS SHORTDIM index2 AS SHORTDIM blocks(25,19) AS STR255DIM object AS STR255DIM fPath AS CFURLREFDIM bul1X AS SHORTDIM bul1Y AS SHORTDIM bul2X AS SHORTDIM bul2Y AS SHORTDIM bul3X AS SHORTDIM bul3Y AS SHORTDIM bulDir1 AS STR255DIM bulDir2 AS STR255DIM bulDir3 AS STR255DIM bul1Flag AS STR255DIM hitBrickX AS STR255DIM hitBrickY AS STR255DIM prevCheck AS STR255WINDOW 1, @"IWBTG", (0,0) - (600,456)LET fpath = OSPANELOPEN(,@"Select a file", @"txt",@"Open",)OPEN "I",1, @fPathFOR index2 = 1 TO 19 STEP 1FOR index1 = 1 TO 25 STEP 1READ #1, object; 5FN TRUNCATE (object)LET blocks(index1,index2) = objectNEXTNEXTCLOSE #1FOR index2 = 1 TO 19 STEP 1FOR index1 = 1 TO 25 STEP 1SELECT blocks(index1,index2)CASE "brick"pictH = fn ResourceImageToPICTHandle( @"Dirt block.gif", @r )CASE "save-"pictH = fn ResourceImageToPICTHandle( @"Save RED.gif", @r )END SELECTIF blocks(index1,index2) <> "air--"picture ((index1 - 1)*24,(index2 - 1)*24) - (((index1 - 1)*24)+25,((index2 - 1)*24)+25), pictHfn DisposeH( pictH )END IFNEXTNEXT/*pictH = fn ResourceImageToPICTHandle( @"1st stage background.png", @r )picture ( 0,0 ) - ( 500, 500), pictHfn DisposeH( pictH )*/LET hitX1 = 24LET hitX2 = 48LET hitY1 = 48LET hitY2 = 72pictH = fn ResourceImageToPICTHandle( @"The kid RIGHT.gif", @r )picture ( hitX1,hitY1 ) - ( hitX2, hitY2), pictHfn DisposeH( pictH )DO/*COLOR _zBlackPRINT % (50,50) blocks(hitX1/24 + 1,hitY2/24 - 2)*/SELECT upDownCASE "up"IF jumpNo = 1IF blocks(hitX1/24 + 1,hitY2/24) <> "brick"COLOR _zWhiteBOX FILL hitX1,hitY1 TO hitX2,hitY2hitY1 -= 7hitY2 -= 7heightCounter += 1END IFIF heightCounter = 12 OR blocks(hitX1/24 + 1,hitY2/24) = "brick"LET heightCounter = 0LET upDown = "down"END IFEND IFIF jumpNo > 1COLOR _zWhiteIF blocks(hitX1/24 + 1,hitY2/24) <> "brick"BOX FILL hitX1,hitY1 TO hitX2,hitY2hitY1 -= 7hitY2 -= 7heightCounter += 1END IFIF heightCounter = 8 OR blocks(hitX1/24 + 1,hitY2/24) = "brick"LET heightCounter = 0LET upDown = "down"END IFEND IFCASE "down"IF jumpNo = 1COLOR _zWhiteIF blocks(hitX1/24,hitY1/24 + 2) <> "brick"BOX FILL hitX1,hitY1 TO hitX2,hitY2hitY1 += 7hitY2 +=7END IFIF hitY1 = tempJump OR blocks(hitX1/24,hitY1/24 + 2) = "brick"LET upDown = ""LET inkeyFill = ""LET jumpNo = 0END IFEND IFIF jumpNo >= 2 AND hitY1 < tempJumpCOLOR _zWhiteIF blocks(hitX1/24,hitY1/24 + 2) <> "brick"BOX FILL hitX1,hitY1 TO hitX2,hitY2hitY1 += 7hitY2 +=7END IFIF hitY1 = tempJump OR blocks(hitX1/24,hitY1/24 + 2) = "brick"LET upDown = ""LET inkeyFill = ""LET jumpNo = 0END IFEND IFEND SELECTSELECT leftRightCASE "a"COLOR _zWhiteBOX FILL hitX1,hitY1 TO hitX2,hitY2hitX1 -= 12hitX2 -= 12LET inkeyFill = ""LET leftRight = ""LET lastDir = "a"CASE "d"COLOR _zWhiteBOX FILL hitX1,hitY1 TO hitX2,hitY2hitX1 += 12hitX2 += 12LET inkeyFill = ""LET leftRight = ""LET lastDir = "d"END SELECTSELECT lastDirCASE "a"pictH = fn ResourceImageToPICTHandle( @"The kid LEFT.gif", @r )picture ( hitX1,hitY1 ) - ( hitX2, hitY2), pictHfn DisposeH( pictH )CASE "d"pictH = fn ResourceImageToPICTHandle( @"The kid RIGHT.gif", @r )picture ( hitX1,hitY1 ) - ( hitX2, hitY2), pictHfn DisposeH( pictH )END SELECTIF bul1X <> 0 //PRINT % (50,50) (bul1X/24 + 1)" "(bul1Y/24 + 1)IF blocks(bul1X/24 + 1,(bul1Y - 12)/24 + 1) <> "brick"IF bulDir1 = ""SELECT lastDirCASE "a"LET bulDir1 = "left"CASE "d"LET bulDir1 = "right"END SELECTEND IFCOLOR _zWhiteCIRCLE FILL bul1X,bul1Y, 5SELECT bulDir1CASE "left"bul1X -= 6CASE "right"bul1X += 6END SELECTCOLOR _zCyanCIRCLE FILL bul1X,bul1Y, 5ELSECOLOR _zWhiteCIRCLE FILL bul1X,bul1Y,5LET bul1X = 0LET bul1Y = 0//PRINT % (100,100) bul1X,bul1Y,bul1FlagEND IFEND IFIF bul2X <> 0 //PRINT % (50,50) (bul1X/24 + 1)" "(bul1Y/24 + 1)IF blocks(bul2X/24 + 1,(bul2Y - 12)/24 + 1) <> "brick"IF bulDir2 = ""SELECT lastDirCASE "a"LET bulDir2 = "left"CASE "d"LET bulDir2 = "right"END SELECTEND IFCOLOR _zWhiteCIRCLE FILL bul2X,bul2Y, 5SELECT bulDir2CASE "left"bul2X -= 6CASE "right"bul2X += 6END SELECTCOLOR _zCyanCIRCLE FILL bul2X,bul2Y, 5ELSECOLOR _zWhiteCIRCLE FILL bul2X,bul2Y,5LET bul2X = 0LET bul2Y = 0//PRINT % (100,100) bul1X,bul1Y,bul1FlagEND IFEND IFIF bul3X <> 0 IF blocks(bul3X/24 + 1,(bul3Y - 12)/24 + 1) <> "brick"IF bulDir3 = ""SELECT lastDirCASE "a"LET bulDir3 = "left"CASE "d"LET bulDir3 = "right"END SELECTEND IFCOLOR _zWhiteCIRCLE FILL bul3X,bul3Y, 5SELECT bulDir3CASE "left"bul3X -= 6CASE "right"bul3X += 6END SELECTCOLOR _zCyanCIRCLE FILL bul3X,bul3Y, 5ELSECOLOR _zWhiteCIRCLE FILL bul3X,bul3Y,5LET bul3X = 0LET bul3Y = 0END IFEND IFIF blocks(hitX1/24 + 1,hitY2/24 + 1) <> "brick" AND upDown = ""COLOR _zWhiteBOX FILL hitX1,hitY1 TO hitX2,hitY2hitY1 += 12hitY2 += 12SELECT lastDirCASE "a"pictH = fn ResourceImageToPICTHandle( @"The kid LEFT.gif", @r )picture ( hitX1,hitY1 ) - ( hitX2, hitY2), pictHfn DisposeH( pictH )CASE "d"pictH = fn ResourceImageToPICTHandle( @"The kid RIGHT.gif", @r )picture ( hitX1,hitY1 ) - ( hitX2, hitY2), pictHfn DisposeH( pictH )END SELECTEND IF/* _zRedLONG COLOR 0,0,0,_FalsePRINT % (50,50) jumpNoPRINT % (50,70) heightCounterPRINT % (50,90) upDown*/ // debugLET inkey = ""int3 ++IF int3 = 2LET int3 = 0LET inkey = INKEY$IF inkey <> ""LET inkeyFill = "yup"SELECT inkeyCASE " "LET jumpNo += 1IF jumpNo = 0 OR jumpNo = 1 OR jumpNo = 2LET heightCounter = 0LET upDown = "up"IF jumpNo = 1LET tempJump = hitY1END IFEND IFCASE "a"LET leftRight = "a"CASE "d"LET leftRight = "d"CASE "m"GOSUB "bullet 123"END SELECTLET inkey = ""END IFEND IF/*pictH = fn ResourceImageToPICTHandle( @"1st stage background.png", @r )picture ( 0,0 ) - ( 500, 500), pictHfn DisposeH( pictH )*/UNTIL game = "over"STOP"bullet 123"IF bul1X = 0LET bul1X = hitX1LET bul1Y = (hitY1 + hitY2)/2RETURNEND IFIF bul1X <> 0 AND bul2X = 0LET bul2X = hitX1LET bul2Y = (hitY1 + hitY2)/2RETURNEND IFIF bul1X <> 0 AND bul2X <> 0 AND bul3X = 0LET bul3X = hitX1LET bul3Y = (hitY1 + hitY2)/2RETURNEND IFRETURN
